@@ -71,6 +71,8 @@ for i in range(epoch):
     w2 = w2-lr*dw2
     w1 = w1-lr*dw1
 
+pbar.close()
+
 
 def predict(w1, w2, input):
     z1, a1, z2, a2 = forward_prop(w1, w2, test)
