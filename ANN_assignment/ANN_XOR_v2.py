@@ -88,7 +88,7 @@ outputFeatures = Y.shape[0]  # number of output features (1)
 parameters = initializeParameters(
     inputFeatures, neuronsInHiddenLayers, outputFeatures)
 epoch = 100000
-learningRate = 0.01
+learningRate = 0.1
 losses = np.zeros((epoch, 1))
 
 pbar = tqdm(total=epoch)
