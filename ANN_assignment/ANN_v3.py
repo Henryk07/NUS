@@ -81,7 +81,7 @@ X = np.array([[1, 1, 0, 0], [0, 1, 0, 1]])
 # The correct output of XOR
 Y = np.array([1, 0, 0, 1])
 # Define model parameters
-n_h = 2  # number of hidden layer neurons (2)
+n_h = 3  # number of hidden layer neurons (2)
 n_x = X.shape[0]  # number of input (2)
 n_y = Y.shape[0]  # number of output(1)
 parameters = initializeParameters(
