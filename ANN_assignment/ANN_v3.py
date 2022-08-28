@@ -1,3 +1,5 @@
+# NUS Chen Haolin
+# ESp3201 Assignment 2 ANN_XOR
 # libraries
 from cgi import test
 import numpy as np
@@ -25,8 +27,9 @@ def initializeParameters(n_x, n_h, n_y):
                   "W2": W2, "b2": b2}
     return parameters
 
-
 # Forward Propagation
+
+
 def forwardPropagation(X, Y, parameters):
     m = X.shape[1]  # Total training examples
     W1 = parameters["W1"]
@@ -81,13 +84,13 @@ X = np.array([[1, 1, 0, 0], [0, 1, 0, 1]])
 # The correct output of XOR
 Y = np.array([1, 0, 0, 1])
 # Define model parameters
-n_h = 3  # number of hidden layer neurons (2)
+n_h = 3  # number of hidden layer neurons (3)
 n_x = X.shape[0]  # number of input (2)
 n_y = Y.shape[0]  # number of output(1)
 parameters = initializeParameters(
     n_x, n_h, n_y)
 epoch = 100000  # training epoch setting
-learningRate = 0.1  # learning rate
+learningRate = 0.2  # learning rate
 losses = np.zeros((epoch, 1))
 
 pbar = tqdm(total=epoch)
