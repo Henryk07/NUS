@@ -7,14 +7,14 @@ from tqdm import tqdm
 
 # These are XOR inputs
 x = np.array([[0, 0, 1, 1], [0, 1, 0, 1]])
-# These are XOR outputs
+# These are XOR outputs(Correct)
 y = np.array([[0, 1, 1, 0]])
 # Number of inputs
 n_x = 2
-# Number of neurns in output layer
-n_y = 1
 # Number of neurons in hidden layer
 n_h = 2
+# Number of neurns in output layer
+n_y = 1
 # Total training examples
 m = x.shape[1]
 # Learning rate

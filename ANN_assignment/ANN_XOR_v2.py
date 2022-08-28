@@ -108,7 +108,8 @@ plt.ylabel("Loss value")
 plt.show()
 
 # Testing
-X = np.array([[1, 1, 0, 0], [0, 1, 0, 1]])  # XOR input
+X = np.array([[1, 1, 0, 0],
+              [0, 1, 0, 1]])  # XOR input
 cost, _, A2 = forwardPropagation(X, Y, parameters)
 prediction = (A2 > 0.5) * 1.0
 # print(A2)
