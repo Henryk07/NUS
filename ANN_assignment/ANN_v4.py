@@ -54,7 +54,7 @@ def forwardPropagation(X, Y, parameters):
     Z1 = np.dot(W1, X) + b1
     A1 = sigmoid(Z1)
     Z2 = np.dot(W2, A1) + b2
-    A2 = sigmoid(Z2)
+    A2 = relu(Z2)
 
     cache = (Z1, A1, W1, b1, Z2, A2, W2, b2)
     # logprobs = np.multiply(np.log(A2), Y) + \

@@ -4,6 +4,10 @@ m = x.shape[1]
 w1 = np.random.rand(2, 2)
 w2 = ([[2, 2], [3, 3]])
 z1 = np.dot(w1, x)
-print(w1)
-print(x[0, 0])
-print(z1)
+
+
+def linear(x):
+    return np.sum(2, x)
+
+
+print(linear(2))
