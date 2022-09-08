@@ -124,6 +124,7 @@ def resample_particles(particles, weights):
     new_particles = []
 
     '''your code here'''
+
     '''***        ***'''
 
     return new_particles
