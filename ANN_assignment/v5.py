@@ -1,6 +1,7 @@
 # NUS Chen Haolin
 # ESp3201 Assignment 2 ANN_XOR
 # libraries
+from dataclasses import dataclass
 from math import log
 from cgi import test
 import numpy as np

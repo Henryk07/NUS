@@ -1,6 +1,5 @@
-# NUS Chen Haolin
-# ESp3201 Assignment 2 ANN_XOR
-# libraries
+
+from cProfile import label
 from cgi import test
 import numpy as np
 import matplotlib.pyplot as plt
@@ -8,160 +7,126 @@ import matplotlib as mpl
 import time
 from tqdm import tqdm
 
+# These are XOR inputs
+x = np.array([[0, 0, 1, 1], [0, 1, 0, 1]])
+# These are XOR outputs(Correct)
+y = np.array([[0, 1, 1, 0]])
+# Number of inputs
+n_x = 2
+# Number of neurons in hidden layer
+n_h = 3
+# Number of neurns in output layer
+n_y = 1
+# Total training examples
+m = x.shape[1]
+# Learning rate
+lr = 0.1
+# Define random seed for consistent results
+np.random.seed(2)
+# Define weight matrices for neural network
+w1 = np.random.rand(n_h, n_x)   # Weight matrix for hidden layer
+w2 = np.random.rand(n_y, n_h)   # Weight matrix for output layer
+# I didnt use bias units
+# We will use this list to accumulate losses
+losses = []
+loss_aa = []
+loss_bb = []
+loss_cc = []
+loss_dd = []
 
-# Sigmoid Function [activation func]
+# I used sigmoid activation function for hidden layer and output
+
+
+def mean_squared_error(actual, predicted):
+    sum_square_error = 0.0
+    for i in range(1):
+        sum_square_error += (actual - predicted)**2.0
+    mean_square_error = 1.0 / 1 * sum_square_error
+    return mean_square_error
 
 
 def sigmoid(z):
     z = 1/(1+np.exp(-z))
     return z
 
-# linear activation function
+# Forward propagation
 
 
-def linear(x):
-    return x/1.15
+def forward_prop(w1, w2, x):
+    z1 = np.dot(w1, x)
+    a1 = sigmoid(z1)
+    z2 = np.dot(w2, a1)
+    a2 = sigmoid(z2)
+    return z1, a1, z2, a2
 
-# rectified linear function
-
-
-def relu(x):
-    return (np.maximum(0, x))
-
-# initialize parameters
+# Backward propagation
 
 
-def initializeParameters(n_x, n_h, n_y):
-    W1 = np.random.randn(n_h, n_x)
-    W2 = np.random.randn(n_y, n_h)
-    b1 = np.zeros((n_h, 1))
-    b2 = np.zeros((n_y, 1))
+def back_prop(m, w1, w2, z1, a1, z2, a2, y):
 
-    parameters = {"W1": W1, "b1": b1,
-                  "W2": W2, "b2": b2}
-    return parameters
+    dz2 = a2-y
+    dw2 = np.dot(dz2, a1.T)/m
+    dz1 = np.dot(w2.T, dz2) * a1*(1-a1)
+    dw1 = np.dot(dz1, x.T)/m
+    dw1 = np.reshape(dw1, w1.shape)
 
-# Forward Propagation
-
-
-def forwardPropagation(X, Y, parameters):
-    m = X.shape[1]  # Total training examples
-
-    W1 = W2 = b1 = b2 = Z1 = A1 = Z2 = A2 = 0
-
-    W1 = parameters["W1"]
-    W2 = parameters["W2"]
-    b1 = parameters["b1"]
-    b2 = parameters["b2"]
-
-    Z1 = np.dot(W1, X) + b1
-    A1 = sigmoid(Z1)
-    Z2 = np.dot(W2, A1) + b2
-    A2 = sigmoid(Z2)
-
-    cache = (Z1, A1, W1, b1, Z2, A2, W2, b2)
-    # logprobs = np.multiply(np.log(A2), Y) + \
-    #     np.multiply(np.log(1 - A2), (1 - Y))
-    # loss = -np.sum(logprobs) / m
-
-    loss = (-1/m) * np.sum(np.multiply(Y, np.log(A2)) +
-                           np.multiply((1-Y), np.log(1-A2)))
-    # Make sure cost is a scalar
-    loss = np.squeeze(loss)
-    return loss, cache, A2
-
-# Backward Propagation
+    dw2 = np.reshape(dw2, w2.shape)
+    return dz2, dw2, dz1, dw1
 
 
-def backwardPropagation(X, Y, cache):
-    m = X.shape[1]
-    (Z1, A1, W1, b1, Z2, A2, W2, b2) = cache
-
-    dZ2 = A2 - Y
-    dW2 = np.dot(dZ2, A1.T) / m
-    db2 = np.sum(dZ2, axis=1, keepdims=True)
-
-    dA1 = np.dot(W2.T, dZ2)
-    dZ1 = np.multiply(dA1, A1 * (1 - A1))
-    dW1 = np.dot(dZ1, X.T) / m
-    db1 = np.sum(dZ1, axis=1, keepdims=True) / m
-
-    gradients = {"dZ2": dZ2, "dW2": dW2, "db2": db2,
-                 "dZ1": dZ1, "dW1": dW1, "db1": db1}
-    return gradients
-
-# Updating the weights based on gradients
-
-
-def updateParameters(parameters, gradients, l_r):
-    parameters["W1"] = parameters["W1"] - l_r * gradients["dW1"]
-    parameters["W2"] = parameters["W2"] - l_r * gradients["dW2"]
-    parameters["b1"] = parameters["b1"] - l_r * gradients["db1"]
-    parameters["b2"] = parameters["b2"] - l_r * gradients["db2"]
-    return parameters
-
-
-# XOR inputs
-X = np.array([[1, 1, 0, 0], [0, 1, 0, 1]])
-# The correct output of XOR
-Y = np.array([1, 0, 0, 1])
-# Define model parameters
-n_h = 3  # number of hidden layer neurons (3)
-n_x = X.shape[0]  # number of input (2)
-n_y = Y.shape[0]  # number of output(1)
-parameters = initializeParameters(
-    n_x, n_h, n_y)
-epoch = 100000  # training epoch setting
-learningRate = 1  # learning rate
-losses = np.zeros((epoch, 1))
-
+epoch = 50000  # 50000
 pbar = tqdm(total=epoch)
 for i in range(epoch):
-
-    losses[i, 0], cache, A2 = forwardPropagation(X, Y, parameters)
-    gradients = backwardPropagation(X, Y, cache)
-    parameters = updateParameters(parameters, gradients, learningRate)
+    z1, a1, z2, a2 = forward_prop(w1, w2, x)
+    loss_a = (a2[0, 0] - y[0, 0])**2
+    loss_b = (a2[0, 1] - y[0, 1])**2
+    loss_c = (a2[0, 2] - y[0, 2])**2
+    loss_d = (a2[0, 3] - y[0, 3])**2
+    loss = -(1/m)*np.sum(y*np.log(a2)+(1-y)*np.log(1-a2))
+    losses.append(loss)
+    loss_aa.append(loss_a)
+    loss_bb.append(loss_b)
+    loss_cc.append(loss_c)
+    loss_dd.append(loss_d)
     pbar.update(1)
+    da2, dw2, dz1, dw1 = back_prop(m, w1, w2, z1, a1, z2, a2, y)
+    w2 = w2-lr*dw2
+    w1 = w1-lr*dw1
 
 pbar.close()
-# Evaluating the performance(loss value diagram)
+
+
+def predict(w1, w2, input):
+    z1, a1, z2, a2 = forward_prop(w1, w2, test)
+    a2 = np.squeeze(a2)
+    if a2 >= 0.5:
+        # ['{:.2f}'.format(i) for i in x])
+        print("For input", [i[0] for i in input], "output is 1")
+    else:
+        print("For input", [i[0] for i in input], "output is 0")
+
+
+# We plot losses to see how our network is doing
+
+
 plt.figure()
-#plt.xticks(range(1, 200))
-plt.plot(losses)
+line1, = plt.plot(losses, label="Total loss value")
+line2, = plt.plot(loss_aa, label="loss value for input (0,0)")
+line3, = plt.plot(loss_bb, label="loss value for input (0,1)")
+line4, = plt.plot(loss_cc, label="loss value for input (1,0)")
+line5, = plt.plot(loss_dd, label="loss value for input (1,1)")
+leg = plt.legend(loc='upper right')
 plt.xlabel("EPOCHS")
 plt.ylabel("Loss value")
-
-
-learningRate = 0.5  # learning rate
-losses = np.zeros((epoch, 1))
-
-pbar = tqdm(total=epoch)
-for i in range(epoch):
-
-    losses[i, 0], cache, A2 = forwardPropagation(X, Y, parameters)
-    gradients = backwardPropagation(X, Y, cache)
-    parameters = updateParameters(parameters, gradients, learningRate)
-    pbar.update(1)
-
-pbar.close()
-plt.plot(losses)
-
+plt.title("Loss value against Epochs")
 plt.show()
 
 
-# Testing
-X = np.array([[0, 1, 0, 1],
-              [0, 1, 1, 0]])  # XOR test input
-Y = np.array([0, 0, 1, 1])
-loss, _, A2 = forwardPropagation(X, Y, parameters)
-prediction = (A2 > 0.5) * 1.0
-print(prediction[0, :])
-# print("loss value is ", loss)
-
-# if prediction == Y_t:
-#   print("The input is", [X_t[0, i]
-#        for i in X_t], [X_t[1, i] for i in X_t], "yes")
-# else:
-#   print("The input is", [X_t[0, i]
-#          for i in X_t], [X_t[1, i] for i in X_t], "yes")
-# print(A2)
+test = np.array([[1], [0]])
+predict(w1, w2, test)
+test = np.array([[1], [1]])
+predict(w1, w2, test)
+test = np.array([[0], [0]])
+predict(w1, w2, test)
+test = np.array([[0], [1]])
+predict(w1, w2, test)

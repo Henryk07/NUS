@@ -66,7 +66,6 @@ pbar = tqdm(total=epoch)
 for i in range(epoch):
     z1, a1, z2, a2 = forward_prop(w1, w2, x)
     loss = -(1/m)*np.sum(y*np.log(a2)+(1-y)*np.log(1-a2))
-    print(loss)
     losses.append(loss)
     pbar.update(1)
     da2, dw2, dz1, dw1 = back_prop(m, w1, w2, z1, a1, z2, a2, y)

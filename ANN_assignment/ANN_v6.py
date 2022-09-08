@@ -1,4 +1,7 @@
-
+# NUS Chen Haolin
+# ESp3201 Assignment 2 ANN_XOR
+# libraries
+# v6
 from cgi import test
 import numpy as np
 import matplotlib.pyplot as plt
@@ -19,7 +22,7 @@ n_y = 1
 # Total training examples
 m = x.shape[1]
 # Learning rate
-lr = 0.1
+lr = 0.01
 # Define random seed for consistent results
 np.random.seed(2)
 # Define weight matrices for neural network
@@ -73,7 +76,7 @@ def back_prop(m, w1, w2, z1, a1, z2, a2, y):
     return dz2, dw2, dz1, dw1
 
 
-epoch = 50000  # 50000
+epoch = 200000  # 50000
 pbar = tqdm(total=epoch)
 for i in range(epoch):
     z1, a1, z2, a2 = forward_prop(w1, w2, x)
@@ -109,20 +112,20 @@ def predict(w1, w2, input):
 
 
 plt.figure()
-plt.subplot(151)
-plt.plot(losses)
-plt.subplot(152)
-plt.plot(loss_aa)
-plt.subplot(153)
-plt.plot(loss_bb)
-plt.subplot(154)
-plt.plot(loss_cc)
-plt.subplot(155)
-plt.plot(loss_dd)
+line1, = plt.plot(losses, label="Total loss value")
+#line2, = plt.plot(loss_aa, label="loss value for input (0,0)")
+#line3, = plt.plot(loss_bb, label="loss value for input (0,1)")
+#line4, = plt.plot(loss_cc, label="loss value for input (1,0)")
+#line5, = plt.plot(loss_dd, label="loss value for input (1,1)")
+leg = plt.legend(loc='upper right')
 plt.xlabel("EPOCHS")
 plt.ylabel("Loss value")
+plt.title("Loss value against Epochs")
+plt.xlim([-500, 200000])
 plt.show()
 
+print('learning rate =', lr)
+print('epochs =', epoch)
 test = np.array([[1], [0]])
 predict(w1, w2, test)
 test = np.array([[1], [1]])
@@ -131,3 +134,5 @@ test = np.array([[0], [0]])
 predict(w1, w2, test)
 test = np.array([[0], [1]])
 predict(w1, w2, test)
+
+print('loss value = ', losses[-1])
