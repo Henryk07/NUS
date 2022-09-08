@@ -32,10 +32,20 @@ def relu(x):
 
 
 def initializeParameters(n_x, n_h, n_y):
-    W1 = np.random.randn(n_h, n_x)
-    W2 = np.random.randn(n_y, n_h)
+    W1 = [[0.011246756  0.01857022]
+          [0.0049142496 - 0.008718987]
+          [0.006378179 - 0.002373877]]
+    [[0.01785864 - 0.0048661778]
+     [0.68447624  1.00665372]
+     [-0.0095215288 - 0.003626722]]
+    W2 = [[0.011246756  0.01857022]
+          [0.0049142496 - 0.008718987]
+          [0.006378179 - 0.002373877]]
+    [[0.01785864 - 0.0048661778]
+     [0.68447624  1.00665372]
+     [-0.0095215288 - 0.003626722]]
     b1 = np.zeros((n_h, 1))
-    b2 = np.zeros((n_y, 1))
+    b2 = 0.003
 
     parameters = {"W1": W1, "b1": b1,
                   "W2": W2, "b2": b2}
@@ -54,18 +64,41 @@ def forwardPropagation(X, Y, parameters):
     Z1 = np.dot(W1, X) + b1
     A1 = sigmoid(Z1)
     Z2 = np.dot(W2, A1) + b2
-    A2 = relu(Z2)
+    A2 = sigmoid(Z2)
 
     cache = (Z1, A1, W1, b1, Z2, A2, W2, b2)
     # logprobs = np.multiply(np.log(A2), Y) + \
     #     np.multiply(np.log(1 - A2), (1 - Y))
     # loss = -np.sum(logprobs) / m
+    #print('a', A2)
+    #print('aaaaa', A2[0, :])
+    # print(Y[1])
+    losstest = 0
+    #global losstest
+    for j in range(4):
+        losstest += np.square(A2[0, j]-Y[0]).sum()
+
+    lossa = (-1/m) * np.sum(np.multiply(Y[0], np.log(A2[0, :])) +
+                            np.multiply((1-Y[0]), np.log(1-A2[0, :])))
+
+    lossb = (-1/m) * np.sum(np.multiply(Y[1], np.log(A2[1, :])) +
+                            np.multiply((1-Y[1]), np.log(1-A2[1, :])))
+
+    lossc = (-1/m) * np.sum(np.multiply(Y[2], np.log(A2[2, :])) +
+                            np.multiply((1-Y[2]), np.log(1-A2[2, :])))
+
+    lossd = (-1/m) * np.sum(np.multiply(Y[3], np.log(A2[3, :])) +
+                            np.multiply((1-Y[3]), np.log(1-A2[3, :])))
 
     loss = (-1/m) * np.sum(np.multiply(Y, np.log(A2)) +
                            np.multiply((1-Y), np.log(1-A2)))
     # Make sure cost is a scalar
     loss = np.squeeze(loss)
-    return loss, cache, A2
+    #lossa = np.squeeze(lossa)
+    #lossb = np.squeeze(lossb)
+    #lossc = np.squeeze(lossc)
+    #lossd = np.squeeze(lossd)
+    return losstest, lossd, lossc, lossb, lossa, loss, cache, A2
 
 # Backward Propagation
 
@@ -99,40 +132,65 @@ def updateParameters(parameters, gradients, l_r):
 
 
 # XOR inputs
-X = np.array([[1, 1, 0, 0], [0, 1, 0, 1]])
+X = np.array([[1, 1, 0, 0],
+              [0, 1, 0, 1]])
 # The correct output of XOR
 Y = np.array([1, 0, 0, 1])
+# for each inputs
 # Define model parameters
 n_h = 3  # number of hidden layer neurons (3)
 n_x = X.shape[0]  # number of input (2)
 n_y = Y.shape[0]  # number of output(1)
+# for each
+
 parameters = initializeParameters(
     n_x, n_h, n_y)
-epoch = 100000  # training epoch setting
-learningRate = 0.01  # learning rate
+parameters_each = initializeParameters(
+    2, 3, 1)
+epoch = 10  # training epoch setting
+learningRate = 0.1  # learning rate
 losses = np.zeros((epoch, 1))
+lossa = np.zeros((epoch, 1))
+lossb = np.zeros((epoch, 1))
+lossc = np.zeros((epoch, 1))
+lossd = np.zeros((epoch, 1))
 
 pbar = tqdm(total=epoch)
 for i in range(epoch):
 
-    losses[i, 0], cache, A2 = forwardPropagation(X, Y, parameters)
+    losstest, lossd[i, 0], lossc[i, 0], lossb[i, 0], lossa[i, 0], losses[i, 0], cache, A2 = forwardPropagation(
+        X, Y, parameters)
     gradients = backwardPropagation(X, Y, cache)
     parameters = updateParameters(parameters, gradients, learningRate)
     pbar.update(1)
 
 pbar.close()
 # Evaluating the performance(loss value diagram)
-plt.figure()
+plt.subplot(151)
+plt.plot(lossa)
+plt.subplot(152)
+plt.plot(lossb)
+plt.subplot(153)
+plt.plot(lossc)
+plt.subplot(154)
+plt.plot(lossd)
+plt.subplot(155)
 plt.plot(losses)
+#plt.suptitle('Categorical Plotting')
 plt.xlabel("EPOCHS")
 plt.ylabel("Loss value")
 plt.show()
+# plt.figure()
+#plt.plot(loss_a, 'r--', losses, 'b')
+# plt.xlabel("EPOCHS")
+#plt.ylabel("Loss value")
+# plt.show()
 
 # Testing
 X = np.array([[0, 1, 0, 1],
               [0, 1, 1, 0]])  # XOR test input
 Y = np.array([0, 0, 1, 1])
-loss, _, A2 = forwardPropagation(X, Y, parameters)
+_, _, _, _, loss, _, A2 = forwardPropagation(X, Y, parameters)
 prediction = (A2 > 0.5) * 1.0
 print(prediction[0, :])
 # print("loss value is ", loss)

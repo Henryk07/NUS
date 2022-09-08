@@ -109,7 +109,7 @@ n_y = Y.shape[0]  # number of output(1)
 parameters = initializeParameters(
     n_x, n_h, n_y)
 epoch = 100000  # training epoch setting
-learningRate = 0.01  # learning rate
+learningRate = 0.005  # learning rate
 losses = np.zeros((epoch, 1))
 
 pbar = tqdm(total=epoch)
@@ -123,6 +123,8 @@ for i in range(epoch):
 pbar.close()
 # Evaluating the performance(loss value diagram)
 plt.figure()
+#plt.xticks(range(1, 200))
+#plt.xlim([-500, 100000])
 plt.plot(losses)
 plt.xlabel("EPOCHS")
 plt.ylabel("Loss value")

@@ -46,6 +46,9 @@ def initializeParameters(n_x, n_h, n_y):
 
 def forwardPropagation(X, Y, parameters):
     m = X.shape[1]  # Total training examples
+
+    W1 = W2 = b1 = b2 = Z1 = A1 = Z2 = A2 = 0
+
     W1 = parameters["W1"]
     W2 = parameters["W2"]
     b1 = parameters["b1"]
@@ -108,8 +111,8 @@ n_x = X.shape[0]  # number of input (2)
 n_y = Y.shape[0]  # number of output(1)
 parameters = initializeParameters(
     n_x, n_h, n_y)
-epoch = 10  # training epoch setting
-learningRate = 0.01  # learning rate
+epoch = 100000  # training epoch setting
+learningRate = 1  # learning rate
 losses = np.zeros((epoch, 1))
 
 pbar = tqdm(total=epoch)
@@ -123,10 +126,28 @@ for i in range(epoch):
 pbar.close()
 # Evaluating the performance(loss value diagram)
 plt.figure()
+#plt.xticks(range(1, 200))
 plt.plot(losses)
 plt.xlabel("EPOCHS")
 plt.ylabel("Loss value")
+
+
+learningRate = 0.5  # learning rate
+losses = np.zeros((epoch, 1))
+
+pbar = tqdm(total=epoch)
+for i in range(epoch):
+
+    losses[i, 0], cache, A2 = forwardPropagation(X, Y, parameters)
+    gradients = backwardPropagation(X, Y, cache)
+    parameters = updateParameters(parameters, gradients, learningRate)
+    pbar.update(1)
+
+pbar.close()
+plt.plot(losses)
+
 plt.show()
+
 
 # Testing
 X = np.array([[0, 1, 0, 1],

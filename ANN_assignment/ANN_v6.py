@@ -1,3 +1,4 @@
+
 from cgi import test
 import numpy as np
 import matplotlib.pyplot as plt
@@ -12,7 +13,7 @@ y = np.array([[0, 1, 1, 0]])
 # Number of inputs
 n_x = 2
 # Number of neurons in hidden layer
-n_h = 2
+n_h = 3
 # Number of neurns in output layer
 n_y = 1
 # Total training examples
@@ -27,8 +28,20 @@ w2 = np.random.rand(n_y, n_h)   # Weight matrix for output layer
 # I didnt use bias units
 # We will use this list to accumulate losses
 losses = []
+loss_aa = []
+loss_bb = []
+loss_cc = []
+loss_dd = []
 
 # I used sigmoid activation function for hidden layer and output
+
+
+def mean_squared_error(actual, predicted):
+    sum_square_error = 0.0
+    for i in range(1):
+        sum_square_error += (actual - predicted)**2.0
+    mean_square_error = 1.0 / 1 * sum_square_error
+    return mean_square_error
 
 
 def sigmoid(z):
@@ -43,7 +56,6 @@ def forward_prop(w1, w2, x):
     a1 = sigmoid(z1)
     z2 = np.dot(w2, a1)
     a2 = sigmoid(z2)
-    print(a2)
     return z1, a1, z2, a2
 
 # Backward propagation
@@ -61,13 +73,20 @@ def back_prop(m, w1, w2, z1, a1, z2, a2, y):
     return dz2, dw2, dz1, dw1
 
 
-epoch = 5  # 50000
+epoch = 50000  # 50000
 pbar = tqdm(total=epoch)
 for i in range(epoch):
     z1, a1, z2, a2 = forward_prop(w1, w2, x)
+    loss_a = (a2[0, 0] - y[0, 0])**2
+    loss_b = (a2[0, 1] - y[0, 1])**2
+    loss_c = (a2[0, 2] - y[0, 2])**2
+    loss_d = (a2[0, 3] - y[0, 3])**2
     loss = -(1/m)*np.sum(y*np.log(a2)+(1-y)*np.log(1-a2))
-    print(loss)
     losses.append(loss)
+    loss_aa.append(loss_a)
+    loss_bb.append(loss_b)
+    loss_cc.append(loss_c)
+    loss_dd.append(loss_d)
     pbar.update(1)
     da2, dw2, dz1, dw1 = back_prop(m, w1, w2, z1, a1, z2, a2, y)
     w2 = w2-lr*dw2
@@ -87,7 +106,19 @@ def predict(w1, w2, input):
 
 
 # We plot losses to see how our network is doing
+
+
+plt.figure()
+plt.subplot(151)
 plt.plot(losses)
+plt.subplot(152)
+plt.plot(loss_aa)
+plt.subplot(153)
+plt.plot(loss_bb)
+plt.subplot(154)
+plt.plot(loss_cc)
+plt.subplot(155)
+plt.plot(loss_dd)
 plt.xlabel("EPOCHS")
 plt.ylabel("Loss value")
 plt.show()

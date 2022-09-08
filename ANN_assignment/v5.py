@@ -1,6 +1,7 @@
 # NUS Chen Haolin
 # ESp3201 Assignment 2 ANN_XOR
 # libraries
+from math import log
 from cgi import test
 import numpy as np
 import matplotlib.pyplot as plt
@@ -27,6 +28,26 @@ def linear(x):
 
 def relu(x):
     return (np.maximum(0, x))
+
+
+# MSE loss value
+def mean_squared_error(actual, predicted):
+    sum_square_error = 0.0
+    for i in range(len(actual)):
+        sum_square_error += (actual[i] - predicted[i])**2.0
+    mean_square_error = 1.0 / len(actual) * sum_square_error
+    return mean_square_error
+
+
+# calculate binary cross entropy
+
+
+def mean_squared_error_a(actual, predicted):
+    sum_square_error = 0.0
+    for i in range(1):
+        sum_square_error += (actual - predicted)**2.0
+    mean_square_error = 1.0 / 1 * sum_square_error
+    return mean_square_error
 
 # initialize parameters
 
@@ -57,14 +78,17 @@ def forwardPropagation(X, Y, parameters):
     A2 = sigmoid(Z2)
 
     cache = (Z1, A1, W1, b1, Z2, A2, W2, b2)
+
     # logprobs = np.multiply(np.log(A2), Y) + \
     #     np.multiply(np.log(1 - A2), (1 - Y))
     # loss = -np.sum(logprobs) / m
-
+    #print('A2', A2)
     loss = (-1/m) * np.sum(np.multiply(Y, np.log(A2)) +
                            np.multiply((1-Y), np.log(1-A2)))
-    # Make sure cost is a scalar
-    loss = np.squeeze(loss)
+# Make sure cost is a scalar
+    loss_a = np.squeeze(loss)
+    # print(loss)
+    #print('squeeze', loss_a)
     return loss, cache, A2
 
 # Backward Propagation
@@ -108,7 +132,7 @@ n_x = X.shape[0]  # number of input (2)
 n_y = Y.shape[0]  # number of output(1)
 parameters = initializeParameters(
     n_x, n_h, n_y)
-epoch = 10  # training epoch setting
+epoch = 100000  # training epoch setting
 learningRate = 0.01  # learning rate
 losses = np.zeros((epoch, 1))
 
@@ -116,6 +140,10 @@ pbar = tqdm(total=epoch)
 for i in range(epoch):
 
     losses[i, 0], cache, A2 = forwardPropagation(X, Y, parameters)
+    a_pred = (A2[0, 0]+A2[0, 1]+A2[0, 2]+A2[0, 3])/4
+    Y_a = [Y[0], Y[0], Y[0], Y[0]]
+    loss_a = mean_squared_error(Y_a, A2[0, :])
+    loss_aa = mean_squared_error_a(Y[0], a_pred)
     gradients = backwardPropagation(X, Y, cache)
     parameters = updateParameters(parameters, gradients, learningRate)
     pbar.update(1)
@@ -123,7 +151,12 @@ for i in range(epoch):
 pbar.close()
 # Evaluating the performance(loss value diagram)
 plt.figure()
+plt.subplot(131)
 plt.plot(losses)
+plt.subplot(132)
+plt.plot(epoch, loss_a)
+plt.subplot(133)
+plt.plot(epoch, loss_aa)
 plt.xlabel("EPOCHS")
 plt.ylabel("Loss value")
 plt.show()
