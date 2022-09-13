@@ -2,7 +2,7 @@ import numpy as np
 import scipy.stats
 import matplotlib.pyplot as plt
 from read_data import *
-
+from numpy.random import uniform
 from particle_filter import initialize_particles, mean_pose, sample_motion_model, eval_sensor_model, resample_particles
 
 # add random seed for generating comparable pseudo random numbers
@@ -132,7 +132,6 @@ def main():
 
         # plot the current state
         plot_state(particles, landmarks, actual_robot_pos, map_limits)
-
         # move actual robot and sense state
         odometry = {'r1': 0.1, 't': 0.6, 'r2': 0.15}  # constant motion
         actual_robot_pos = update_robot_pos(
