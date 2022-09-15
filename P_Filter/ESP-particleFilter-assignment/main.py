@@ -2,7 +2,7 @@ import numpy as np
 import scipy.stats
 import matplotlib.pyplot as plt
 from read_data import *
-from numpy.random import uniform
+from numpy.random import uniform, randn, random
 from particle_filter import initialize_particles, mean_pose, sample_motion_model, eval_sensor_model, resample_particles
 
 # add random seed for generating comparable pseudo random numbers
@@ -107,7 +107,6 @@ def update_sensor_readings(actual_robot_pos, landmarks):
         lm_ids.append(int(lm_id))
         ranges.append(meas_range)
         bearings.append(meas_bearing)
-
         sensor_readings = {'id': lm_ids, 'range': ranges, 'bearing': bearings}
 
     return sensor_readings

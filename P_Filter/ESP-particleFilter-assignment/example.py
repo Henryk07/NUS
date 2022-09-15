@@ -1,3 +1,4 @@
+from cgi import print_directory
 from ctypes import sizeof
 from readline import parse_and_bind
 import numpy as np
@@ -32,11 +33,9 @@ def predict(particles, u, std, dt=1.):
 
 def update(particles, weights, z, R, landmarks):
     weights.fill(1.)
-    size = size(particles)
-    print(size)
     for i, landmark in enumerate(landmarks):
         distance = np.linalg.norm(particles[:, 0:2] - landmark, axis=1)
-        weights *= scipy.stats.norm(distance, R).pdf(z[i])
+    weights *= scipy.stats.norm(distance, R).pdf(z[i])
 
     weights += 1.e-300      # avoid round-off to zero
     weights /= sum(weights)  # normalize
@@ -84,9 +83,9 @@ def run_pf(N, iters=18, sensor_std_err=0.1, xlim=(0, 20), ylim=(0, 20)):
         # distance from robot to each landmark
         zs = np.linalg.norm(landmarks - robot_pos, axis=1) + \
             (randn(NL) * sensor_std_err)
+        # print(zs)
         # move particles forward to (x+1, x+1)
         predict(particles, u=(0.00, 1.414), std=(.2, .05))
-
         # incorporate measurements
         update(particles, weights, z=zs, R=sensor_std_err, landmarks=landmarks)
 
@@ -111,4 +110,4 @@ def run_pf(N, iters=18, sensor_std_err=0.1, xlim=(0, 20), ylim=(0, 20)):
 
 
 if __name__ == '__main__':
-    run_pf(N=5000)
+    run_pf(N=10000)

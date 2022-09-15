@@ -1,6 +1,6 @@
 import numpy as np
 import scipy.stats
-from numpy.random import uniform
+from numpy.random import uniform, randn, random
 
 
 def initialize_particles(num_particles, map_limits):
@@ -133,31 +133,46 @@ def eval_sensor_model(sensor_data, particles, landmarks):
         # 50 is measure std error
         weights *= scipy.stats.norm(distance, 50).pdf(ranges[i])'''
     N = len(particles)
-    particles_temp = [0] * N
+    NL = len(landmarks)
+    particles_tempx = [0] * (N+1)
+    particles_tempy = [0] * (N+1)
     for i in range(N):
-        particles_temp[i] = particles[i]['x']
+        particles_tempx[i] = particles[i]['x']
+    array_particles = np.zeros((N+1, 2))
+    array_t = np.array(particles_tempx)
+    for i in range(N):
+        array_particles[i, 0] = array_t[i]
 
-    print(list(particles_temp[:]))
+    for i in range(N):
+        particles_tempy[i] = particles[i]['y']
+
+    array_t = np.array(particles_tempy)
+    for i in range(N):
+        array_particles[i, 1] = array_t[i]
+    print('array', array_particles[:, :], type(array_particles))
+
+    #print(b=[x[0] for x in particles_temp])
     total_num = ids[-1]
     landmark_a = [0]*total_num
     g = 0
     for i in range(total_num):
         landmark_a[g] = landmark_a[g-1] + 1
         g += 1
-    print(landmarks)
-    for i, landmarka in enumerate(landmarks):
-        print(particles[:2][0:2])
-        np.random.rand(10, 2)
-        dist = np.linalg.norm(np.random.rand(10, 2) - landmarka, axis=1)
-        print('range', ranges)
+
+    for i, landmark in enumerate(landmarks):
+
+        #print(np.random.rand(10, 2))
+        dist = np.linalg.norm(array_particles[:][:] - landmark, axis=1)
+        #print('range', ranges)
         #dist = np.linalg.norm(particles[:][0:2] - landmarka, axis=1)
         # dist = np.power(
         #   ((particles[:][0] - landmark_a[i])**2 + (particles[:][1] - landmark_a[i])**2), 0.5)
-        weights *= scipy.stats.norm(dist, 50).pdf(ranges[i])
+        weights = weights * scipy.stats.norm(dist, 50).pdf(ranges)
+
         weights += 1.e-300  # avoid round-off to zero
         weights /= sum(weights)  # normalize
 
-    print('w', weights, 'sensor_range', sensor_data.ranges)
+    print('w', weights)
 
     '''***        ***'''
 
@@ -175,6 +190,17 @@ def resample_particles(particles, weights):
     new_particles = []
 
     '''
+    N = len(particles)
+    cumulative_sum = np.cumsum(weights)
+    cumulative_sum[-1] = 1.  # avoid round-off error
+    indexes = np.searchsorted(cumulative_sum, random(N))
+
+    # resample according to indexes
+    particles[:] = particles[indexes]
+    weights[:] = weights[indexes]
+    weights /= np.sum(weights)
+    
+    
     N = len(weights)
     positions = (np.arange(N) + np.random.random()) / N
 
