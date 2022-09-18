@@ -105,11 +105,28 @@ def eval_sensor_model(sensor_data, particles, landmarks):
     ids = sensor_data['id']
     ranges = sensor_data['range']
 
-    #weights = []
-    weights = np.array([])
-    weights.fill(1.)
+    weights = []
+    #weights = np.array([])
     '''your code here'''
     # get the position of the landmark
+    N = len(particles)
+    NL = len(landmarks)
+    particles_tempx = [0] * (N)
+    particles_tempy = [0] * (N)
+    for i in range(N):
+        particles_tempx[i] = particles[i]['x']
+    array_particles = np.zeros((N, 2))
+    array_t = np.array(particles_tempx)
+    for i in range(N):
+        array_particles[i, 0] = array_t[i]
+
+    for i in range(N):
+        particles_tempy[i] = particles[i]['y']
+
+    array_t = np.array(particles_tempy)
+    for i in range(N):
+        array_particles[i, 1] = array_t[i]
+    #print('array', array_particles[:, :], type(array_particles))
     '''
         self.N = N
         self.x_dim = x_dim
@@ -131,35 +148,10 @@ def eval_sensor_model(sensor_data, particles, landmarks):
         distance = np.power(
             ((particles[:][0] - landmark)**2 + (particles[:][1] - landmark)**2), 0.5)
         # 50 is measure std error
-        weights *= scipy.stats.norm(distance, 50).pdf(ranges[i])'''
-    N = len(particles)
-    NL = len(landmarks)
-    particles_tempx = [0] * (N+1)
-    particles_tempy = [0] * (N+1)
-    for i in range(N):
-        particles_tempx[i] = particles[i]['x']
-    array_particles = np.zeros((N+1, 2))
-    array_t = np.array(particles_tempx)
-    for i in range(N):
-        array_particles[i, 0] = array_t[i]
-
-    for i in range(N):
-        particles_tempy[i] = particles[i]['y']
-
-    array_t = np.array(particles_tempy)
-    for i in range(N):
-        array_particles[i, 1] = array_t[i]
-    print('array', array_particles[:, :], type(array_particles))
-
-    #print(b=[x[0] for x in particles_temp])
-    total_num = ids[-1]
-    landmark_a = [0]*total_num
-    g = 0
-    for i in range(total_num):
-        landmark_a[g] = landmark_a[g-1] + 1
-        g += 1
-
-    for i, landmark in enumerate(landmarks):
+        weights *= scipy.stats.norm(distance, 50).pdf(ranges[i])
+        
+        
+        for i, landmark in enumerate(landmarks):
 
         #print(np.random.rand(10, 2))
         dist = np.linalg.norm(array_particles[:][:] - landmark, axis=1)
@@ -172,7 +164,40 @@ def eval_sensor_model(sensor_data, particles, landmarks):
         weights += 1.e-300  # avoid round-off to zero
         weights /= sum(weights)  # normalize
 
-    print('w', weights)
+        '''
+    p_range = np.zeros((N, 4))
+    for i in range(N):
+        px = array_particles[i][0]
+        py = array_particles[i][1]
+        # get particles x and y
+        #print(px, py)
+        #j = 0
+        for lm_id in landmarks.keys():
+
+            lx = landmarks[lm_id][0]
+            ly = landmarks[lm_id][1]
+
+        # get landmark x and y
+            p_range[i][lm_id-1] = np.sqrt((lx - px)**2 + (ly - py)**2) + \
+                np.random.normal(loc=0.0, scale=sigma_r)
+
+            #j = j+1
+
+    weights = np.zeros((N, 1))
+    total_wei = 0
+    for i in range(N):
+        weights[i] = np.sqrt((p_range[i][0]-ranges[0])**2 + (p_range[i][1]-ranges[1])**2 + (
+            p_range[i][2]-ranges[2])**2 + (p_range[i][3]-ranges[3])**2 + abs(np.random.normal(loc=0.0, scale=sigma_r)))
+        total_wei += weights[i]
+        # print(weights[i])
+    #print(b=[x[0] for x in particles_temp])
+    # weights += 1.e-300  # avoid round-off to zero
+    # print(total_wei)
+
+    for i in range(N):
+        weights[i] /= sum(weights)  # normalize
+
+    #print('w', weights)
 
     '''***        ***'''
 
