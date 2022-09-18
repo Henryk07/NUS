@@ -106,7 +106,7 @@ def eval_sensor_model(sensor_data, particles, landmarks):
     ranges = sensor_data['range']
 
     weights = []
-    #weights = np.array([])
+    # weights = np.array([])
     '''your code here'''
     # get the position of the landmark
     N = len(particles)
@@ -126,7 +126,7 @@ def eval_sensor_model(sensor_data, particles, landmarks):
     array_t = np.array(particles_tempy)
     for i in range(N):
         array_particles[i, 1] = array_t[i]
-    #print('array', array_particles[:, :], type(array_particles))
+    # print('array', array_particles[:, :], type(array_particles))
     '''
         self.N = N
         self.x_dim = x_dim
@@ -138,25 +138,25 @@ def eval_sensor_model(sensor_data, particles, landmarks):
         self.weights = np.empty(N)
         self.weights.fill(1./N)
 
-        self.particles = np.empty((N, 3))  # x, y, heading        
-        
+        self.particles = np.empty((N, 3))  # x, y, heading
+
         for lm_id in landmarks.keys():
         lx = landmarks[lm_id][0]
-        ly = landmarks[lm_id][1] 
+        ly = landmarks[lm_id][1]
         for i, landmark in enumerate(landmarks):
 
         distance = np.power(
             ((particles[:][0] - landmark)**2 + (particles[:][1] - landmark)**2), 0.5)
         # 50 is measure std error
         weights *= scipy.stats.norm(distance, 50).pdf(ranges[i])
-        
-        
+
+
         for i, landmark in enumerate(landmarks):
 
-        #print(np.random.rand(10, 2))
+        # print(np.random.rand(10, 2))
         dist = np.linalg.norm(array_particles[:][:] - landmark, axis=1)
-        #print('range', ranges)
-        #dist = np.linalg.norm(particles[:][0:2] - landmarka, axis=1)
+        # print('range', ranges)
+        # dist = np.linalg.norm(particles[:][0:2] - landmarka, axis=1)
         # dist = np.power(
         #   ((particles[:][0] - landmark_a[i])**2 + (particles[:][1] - landmark_a[i])**2), 0.5)
         weights = weights * scipy.stats.norm(dist, 50).pdf(ranges)
@@ -170,8 +170,8 @@ def eval_sensor_model(sensor_data, particles, landmarks):
         px = array_particles[i][0]
         py = array_particles[i][1]
         # get particles x and y
-        #print(px, py)
-        #j = 0
+        # print(px, py)
+        # j = 0
         for lm_id in landmarks.keys():
 
             lx = landmarks[lm_id][0]
@@ -181,29 +181,33 @@ def eval_sensor_model(sensor_data, particles, landmarks):
             p_range[i][lm_id-1] = np.sqrt((lx - px)**2 + (ly - py)**2) + \
                 np.random.normal(loc=0.0, scale=sigma_r)
 
-            #j = j+1
+            # j = j+1
 
     weights = np.zeros((N, 1))
     total_wei = 0
+    error = np.zeros((N, 1))
     for i in range(N):
-        weights[i] = np.sqrt((p_range[i][0]-ranges[0])**2 + (p_range[i][1]-ranges[1])**2 + (
+        error[i] = np.sqrt((p_range[i][0]-ranges[0])**2 + (p_range[i][1]-ranges[1])**2 + (
             p_range[i][2]-ranges[2])**2 + (p_range[i][3]-ranges[3])**2 + abs(np.random.normal(loc=0.0, scale=sigma_r)))
-        total_wei += weights[i]
+        weights[i] = 1/error[i]
+        #total_wei += weights[i]
+
         # print(weights[i])
-    #print(b=[x[0] for x in particles_temp])
+    # print(b=[x[0] for x in particles_temp])
     # weights += 1.e-300  # avoid round-off to zero
     # print(total_wei)
-
-    for i in range(N):
-        weights[i] /= sum(weights)  # normalize
-
-    #print('w', weights)
-
+    weights /= sum(weights)
+    # for i in range(N):
+    #   weights[i] /= sum(weights)  # normalize
+    #test = 0
+   # print('w', weights)
+    # for i in range(N):
+    #   test += weights[i]
     '''***        ***'''
 
     # normalize weights
-    #normalizer = sum(weights)
-    #weights = weights[0] / normalizer
+    # normalizer = sum(weights)
+    # weights = weights[0] / normalizer
 
     return weights
 
@@ -214,7 +218,17 @@ def resample_particles(particles, weights):
 
     new_particles = []
 
+    # print('re', weights[10])
+    N = len(particles)
+    probabilites = weights / np.sum(weights)
+    probabilites_new = np.reshape(
+        probabilites, (np.product(probabilites.shape),))
+    #probabilites_new = np.squeeze(weights)
+    new_index = np.random.choice(N, size=N, p=probabilites_new)
+    new_particles = np.array(particles)[new_index]
+
     '''
+    
     N = len(particles)
     cumulative_sum = np.cumsum(weights)
     cumulative_sum[-1] = 1.  # avoid round-off error
