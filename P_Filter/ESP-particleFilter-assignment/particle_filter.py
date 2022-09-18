@@ -1,3 +1,6 @@
+#Haolin Chen#
+#A0260816E#
+#ESP3201#
 import numpy as np
 import scipy.stats
 from numpy.random import uniform, randn, random
@@ -113,6 +116,7 @@ def eval_sensor_model(sensor_data, particles, landmarks):
     NL = len(landmarks)
     particles_tempx = [0] * (N)
     particles_tempy = [0] * (N)
+    # convert the particles' format and types
     for i in range(N):
         particles_tempx[i] = particles[i]['x']
     array_particles = np.zeros((N, 2))
@@ -127,7 +131,7 @@ def eval_sensor_model(sensor_data, particles, landmarks):
     for i in range(N):
         array_particles[i, 1] = array_t[i]
     # print('array', array_particles[:, :], type(array_particles))
-
+    # calc and compare the distances
     p_range = np.zeros((N, NL))
     for i in range(N):
         px = array_particles[i][0]
@@ -147,7 +151,6 @@ def eval_sensor_model(sensor_data, particles, landmarks):
             # j = j+1
 
     weights = np.zeros((N, 1))
-
     error = np.zeros((N, 1))
     for i in range(N):
         total_buffer = 0
@@ -158,21 +161,16 @@ def eval_sensor_model(sensor_data, particles, landmarks):
 
         error[i] = np.sqrt(total_buffer) + \
             abs(np.random.normal(loc=0.0, scale=sigma_r))
-
+    # reverse the weights, since lower error means closer
         weights[i] = 1/error[i]
         #total_wei += weights[i]
 
         # print(weights[i])
     # print(b=[x[0] for x in particles_temp])
-    # weights += 1.e-300  # avoid round-off to zero
-    # print(total_wei)
-    weights /= sum(weights)
-    # for i in range(N):
-    #   weights[i] /= sum(weights)  # normalize
-    #test = 0
-   # print('w', weights)
-    # for i in range(N):
-    #   test += weights[i]
+    weights += 1.e-300  # avoid round-off to zero
+
+    weights /= sum(weights)  # normalize
+
     '''***        ***'''
 
     # normalize weights
@@ -199,38 +197,7 @@ def resample_particles(particles, weights):
 
     '''
     
-    N = len(particles)
-    cumulative_sum = np.cumsum(weights)
-    cumulative_sum[-1] = 1.  # avoid round-off error
-    indexes = np.searchsorted(cumulative_sum, random(N))
-
-    # resample according to indexes
-    particles[:] = particles[indexes]
-    weights[:] = weights[indexes]
-    weights /= np.sum(weights)
     
-    
-    N = len(weights)
-    positions = (np.arange(N) + np.random.random()) / N
-
-    indexes = np.zeros(N, 'i')
-    cumulative_sum = np.cumsum(weights)
-    i, j = 0, 0
-    while i < N and j < N:
-        if positions[i] < cumulative_sum[j]:
-            indexes[i] = j
-            i += 1
-        else:
-            j += 1
-    
-    cumulative_sum = np.cumsum(weights)
-    cumulative_sum[-1] = 1. # avoid round-off error
-    indexes = np.searchsorted(cumulative_sum, random(100))
-    
-    # resample according to indexes
-    particles = particles[indexes]
-    weights = weights[indexes]
-    weights /= np.sum(weights) # normalize
     '''
 
     return new_particles
