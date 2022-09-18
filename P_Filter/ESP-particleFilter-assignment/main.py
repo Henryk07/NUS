@@ -120,7 +120,7 @@ def main():
 
     # initialize the particles
     map_limits = [0, 10, 0, 10]
-    particles = initialize_particles(1000, map_limits)
+    particles = initialize_particles(10000, map_limits)
 
     actual_robot_pos = read_pos(
         "P_Filter/ESP-particleFilter-assignment/pos.dat")

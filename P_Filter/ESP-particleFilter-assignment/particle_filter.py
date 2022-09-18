@@ -63,7 +63,7 @@ def sample_motion_model(odometry, particles):
     delta_rot2 = odometry['r2']
 
     # the motion noise parameters: [alpha1, alpha2, alpha3, alpha4]
-    noise = [0.1, 0.1, 0.05, 0.05]
+    noise = [0.1, 0.1, 0.15, 0.15]
 
     # standard deviations of motion noise
     sigma_delta_rot1 = noise[0] * abs(delta_rot1) + noise[1] * delta_trans
@@ -127,45 +127,8 @@ def eval_sensor_model(sensor_data, particles, landmarks):
     for i in range(N):
         array_particles[i, 1] = array_t[i]
     # print('array', array_particles[:, :], type(array_particles))
-    '''
-        self.N = N
-        self.x_dim = x_dim
-        self.y_dim = y_dim
-        self.landmarks = landmarks
-        self.R = measure_std_error
 
-        # distribute particles randomly with uniform weight
-        self.weights = np.empty(N)
-        self.weights.fill(1./N)
-
-        self.particles = np.empty((N, 3))  # x, y, heading
-
-        for lm_id in landmarks.keys():
-        lx = landmarks[lm_id][0]
-        ly = landmarks[lm_id][1]
-        for i, landmark in enumerate(landmarks):
-
-        distance = np.power(
-            ((particles[:][0] - landmark)**2 + (particles[:][1] - landmark)**2), 0.5)
-        # 50 is measure std error
-        weights *= scipy.stats.norm(distance, 50).pdf(ranges[i])
-
-
-        for i, landmark in enumerate(landmarks):
-
-        # print(np.random.rand(10, 2))
-        dist = np.linalg.norm(array_particles[:][:] - landmark, axis=1)
-        # print('range', ranges)
-        # dist = np.linalg.norm(particles[:][0:2] - landmarka, axis=1)
-        # dist = np.power(
-        #   ((particles[:][0] - landmark_a[i])**2 + (particles[:][1] - landmark_a[i])**2), 0.5)
-        weights = weights * scipy.stats.norm(dist, 50).pdf(ranges)
-
-        weights += 1.e-300  # avoid round-off to zero
-        weights /= sum(weights)  # normalize
-
-        '''
-    p_range = np.zeros((N, 4))
+    p_range = np.zeros((N, NL))
     for i in range(N):
         px = array_particles[i][0]
         py = array_particles[i][1]
@@ -184,11 +147,18 @@ def eval_sensor_model(sensor_data, particles, landmarks):
             # j = j+1
 
     weights = np.zeros((N, 1))
-    total_wei = 0
+
     error = np.zeros((N, 1))
     for i in range(N):
-        error[i] = np.sqrt((p_range[i][0]-ranges[0])**2 + (p_range[i][1]-ranges[1])**2 + (
-            p_range[i][2]-ranges[2])**2 + (p_range[i][3]-ranges[3])**2 + abs(np.random.normal(loc=0.0, scale=sigma_r)))
+        total_buffer = 0
+        for j in range(NL):
+            buffer = 0
+            buffer = (p_range[i][j-1]-ranges[j-1])**2
+            total_buffer += buffer
+
+        error[i] = np.sqrt(total_buffer) + \
+            abs(np.random.normal(loc=0.0, scale=sigma_r))
+
         weights[i] = 1/error[i]
         #total_wei += weights[i]
 
@@ -224,7 +194,7 @@ def resample_particles(particles, weights):
     probabilites_new = np.reshape(
         probabilites, (np.product(probabilites.shape),))
     #probabilites_new = np.squeeze(weights)
-    new_index = np.random.choice(N, size=N, p=probabilites_new)
+    new_index = np.random.choice(N, size=100, p=probabilites_new)
     new_particles = np.array(particles)[new_index]
 
     '''
