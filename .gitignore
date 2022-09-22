@@ -1,0 +1,7 @@
+$ cat .gitignore
+# exclude everything except directory foo/bar
+# Global Rules config
+
+#/ESP-search-assignment/__pycache__/test.c
+
+
