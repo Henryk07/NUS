@@ -24,6 +24,7 @@ from agent import Agent
 from maze import Maze
 from search import search
 
+
 class Application:
     def __init__(self, human=True, scale=20, fps=30, alt_color=False):
         self.running = True
@@ -49,7 +50,8 @@ class Application:
 
         if self.__human:
             self.agentRadius = min(self.blockSizeX, self.blockSizeY) / 4
-            self.agent = Agent(self.maze.getStart(), self.maze, self.blockSizeX, self.blockSizeY)
+            self.agent = Agent(self.maze.getStart(), self.maze,
+                               self.blockSizeX, self.blockSizeY)
 
     # Once the application is initiated, execute is in charge of drawing the game and dealing with the game loop
     def execute(self, filename, searchMethod, save):
@@ -62,13 +64,14 @@ class Application:
         if not self.__human:
             t1 = time.time()
             path = search(self.maze, searchMethod)
-            total_time = time.time()-t1  #time in seconds
+            total_time = time.time()-t1  # time in seconds
             statesExplored = self.maze.getStatesExplored()
         else:
             path, statesExplored = [], 0
 
         pygame.init()
-        self.displaySurface = pygame.display.set_mode((self.windowWidth, self.windowHeight), pygame.HWSURFACE)
+        self.displaySurface = pygame.display.set_mode(
+            (self.windowWidth, self.windowHeight), pygame.HWSURFACE)
         self.displaySurface.fill((255, 255, 255))
         pygame.display.flip()
         pygame.display.set_caption(self.windowTitle)
@@ -79,7 +82,7 @@ class Application:
             print("Results")
             print("Path Length:", len(path))
             print("States Explored:", statesExplored)
-            print("Total time", total_time,"seconds")
+            print("Total time", total_time, "seconds")
             self.drawPath(path)
 
         self.drawMaze()
@@ -99,7 +102,7 @@ class Application:
             clock.tick(self.fps)
 
             if (keys[K_ESCAPE]):
-                    raise SystemExit
+                raise SystemExit
 
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
@@ -120,8 +123,8 @@ class Application:
 
                 self.gameLoop()
 
-
     # The game loop is where everything is drawn to the context. Only called when a human is playing
+
     def gameLoop(self):
         self.drawObjective()
         self.drawPlayer()
@@ -131,7 +134,7 @@ class Application:
     # Implementation of a color scheme for the path taken
     # If Red-Green does not work for you while debugging (for e.g. color blindness),
     # you can edit the start and end colors by picking appropriate (R, G, B) values
-    def getColor(self, pathLength, index,alt_color):
+    def getColor(self, pathLength, index, alt_color):
         # start_color = (r0, g0, b0)
         # end_color = (r1, g1, b1)
         # example:
@@ -142,7 +145,6 @@ class Application:
             start_color = (255, 0, 0)
             end_color = (0, 255, 0)
         # default:
-
 
         r_step = (end_color[0] - start_color[0]) / pathLength
         g_step = (end_color[1] - start_color[1]) / pathLength
@@ -157,27 +159,30 @@ class Application:
     # Draws the path (given as a list of (row, col) tuples) to the display context
     def drawPath(self, path):
         for p in range(len(path)):
-            color = self.getColor(len(path), p,self.alt_color)
+            color = self.getColor(len(path), p, self.alt_color)
             self.drawSquare(path[p][0], path[p][1], color)
 
     # Simple wrapper for drawing a wall as a rectangle
     def drawWall(self, row, col):
-        pygame.draw.rect(self.displaySurface, (0, 0, 0), (col * self.blockSizeX, row * self.blockSizeY, self.blockSizeX, self.blockSizeY), 0)
+        pygame.draw.rect(self.displaySurface, (0, 0, 0), (col * self.blockSizeX,
+                         row * self.blockSizeY, self.blockSizeX, self.blockSizeY), 0)
 
     # Simple wrapper for drawing a circle
     def drawCircle(self, row, col, color, radius=None):
         if radius is None:
             radius = min(self.blockSizeX, self.blockSizeY) / 4
-        pygame.draw.circle(self.displaySurface, color, (int(col * self.blockSizeX + self.blockSizeX / 2), int(row * self.blockSizeY + self.blockSizeY / 2)), int(radius))
-
+        pygame.draw.circle(self.displaySurface, color, (int(col * self.blockSizeX +
+                           self.blockSizeX / 2), int(row * self.blockSizeY + self.blockSizeY / 2)), int(radius))
 
     def drawSquare(self, row, col, color):
-        pygame.draw.rect(self.displaySurface, color , (col * self.blockSizeX, row * self.blockSizeY, self.blockSizeX, self.blockSizeY), 0)
+        pygame.draw.rect(self.displaySurface, color, (col * self.blockSizeX,
+                         row * self.blockSizeY, self.blockSizeX, self.blockSizeY), 0)
 
     # Draws the player to the display context, and draws the path moved (only called if there is a human player)
     def drawPlayer(self):
         if self.agent.lastRow is not None and self.agent.lastCol is not None:
-            self.drawCircle(self.agent.lastRow, self.agent.lastCol, (0, 0, 255))
+            self.drawCircle(self.agent.lastRow,
+                            self.agent.lastCol, (0, 0, 255))
         self.drawCircle(self.agent.row, self.agent.col, self.agent.color)
 
     # Draws the objectives to the display context
@@ -187,8 +192,9 @@ class Application:
 
     # Draws start location of path
     def drawStart(self):
-        row,col = self.maze.getStart()
-        pygame.draw.rect(self.displaySurface, (0,0,255), (col * self.blockSizeX + self.blockSizeX/4, row * self.blockSizeY + self.blockSizeY/4, self.blockSizeX * 0.5, self.blockSizeY * 0.5), 0)
+        row, col = self.maze.getStart()
+        pygame.draw.rect(self.displaySurface, (0, 0, 255), (col * self.blockSizeX + self.blockSizeX/4,
+                         row * self.blockSizeY + self.blockSizeY/4, self.blockSizeX * 0.5, self.blockSizeY * 0.5), 0)
 
     # Draws the full maze to the display context
     def drawMaze(self):
@@ -197,24 +203,25 @@ class Application:
                 if self.maze.isWall(row, col):
                     self.drawWall(row, col)
 
+
 if __name__ == "__main__":
 
     parser = argparse.ArgumentParser(description='Search')
 
     parser.add_argument('filename',
                         help='path to maze file [REQUIRED]')
-    parser.add_argument('--method', dest="search", type=str, default = "bfs",
-                        choices = ["bfs", "dfs", "ucs", "astar", "astar_multi"],
+    parser.add_argument('--method', dest="search", type=str, default="bfs",
+                        choices=["bfs", "dfs", "ucs", "astar",
+                                 "astar_corner", "astar_multi"],
                         help='search method - default bfs')
-    parser.add_argument('--scale', dest="scale", type=int, default = 20,
+    parser.add_argument('--scale', dest="scale", type=int, default=20,
                         help='scale - default: 20')
-    parser.add_argument('--fps', dest="fps", type=int, default = 30,
+    parser.add_argument('--fps', dest="fps", type=int, default=30,
                         help='fps for the display - default 30')
-    parser.add_argument('--save', dest="save", type=str, default = None,
+    parser.add_argument('--save', dest="save", type=str, default=None,
                         help='save output to image file - default not saved')
-    parser.add_argument('--altcolor', dest="altcolor", default = False, action = "store_true",
+    parser.add_argument('--altcolor', dest="altcolor", default=False, action="store_true",
                         help='View in an alternate color scheme.')
-
 
     args = parser.parse_args()
     app = Application(False, args.scale, args.fps, args.altcolor)
