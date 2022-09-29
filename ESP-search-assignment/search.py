@@ -18,12 +18,12 @@ files and classes when code is run, so be careful to not modify anything else.
 # maze is a Maze object based on the maze from the file specified by input filename
 # searchMethod is the search method specified by --method flag (bfs,dfs,astar,astar_multi,extra)
 
+# -*- coding: utf-8 -*-
 # Haolin Chen
 # NUS ESP3201
-
+# Assignment 4
 
 from queue import *
-import math
 import time
 from heapq import *
 import copy
@@ -392,8 +392,8 @@ def astar_multi_calculator(maze, start, objectives):
             break
     path = path[::-1]
     path = [start] + path
-    print(time.time()-first)
-    print(path)
+    # print(time.time()-first)
+    # print(path)
     return path
 
 
