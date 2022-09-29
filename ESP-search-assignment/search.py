@@ -17,11 +17,17 @@ files and classes when code is run, so be careful to not modify anything else.
 # to the positions of the path taken by your search algorithm.
 # maze is a Maze object based on the maze from the file specified by input filename
 # searchMethod is the search method specified by --method flag (bfs,dfs,astar,astar_multi,extra)
+
+# Haolin Chen
+# NUS ESP3201
+
+
 from queue import *
 import math
 import time
 from heapq import *
 import copy
+import heapq
 
 
 class Stack:
@@ -58,6 +64,23 @@ class Queue:
         self.content = []
 
 
+class PriorityQueue:
+
+    def __init__(self):
+        self._queue = []
+        self._index = 0
+
+    def insert(self, item, priority):
+        heapq.heappush(self._queue, (priority, self._index, item))
+        self._index += 1
+
+    def remove(self):
+        return heapq.heappop(self._queue)[-1]
+
+    def is_empty(self):
+        return len(self._queue) == 0
+
+
 class Status:
     def __init__(self, position, cost):
         self.position = position
@@ -82,21 +105,6 @@ def search(maze, searchMethod):
         "astar_corner": astar_corner,
         "astar_multi": astar_multi,
     }.get(searchMethod)(maze)
-
-
-class Node():
-    """A node class for A* Pathfinding"""
-
-    def __init__(self, parent=None, position=None):
-        self.parent = parent
-        self.position = position
-
-        self.g = 0
-        self.h = 0
-        self.f = 0
-
-    def __eq__(self, other):
-        return self.position == other.position
 
 
 def bfs(maze):
@@ -196,20 +204,17 @@ def ucs(maze):
     # TODO: Write your code here
     start = maze.getStart()
     end = maze.getObjectives()[0]
-
     close = set()
     neighbors = {}
     parent = {}
     current_cost = {}
-    heuristic = {}
     path = []
     for i in range(maze.rows):
         for j in range(maze.cols):
             current_cost[(i, j)] = 9999
     current_cost[start] = 0
-    heuristic[start] = abs(end[0]-start[0]) + abs(end[1]-start[0])
     heap = []
-    heappush(heap, (current_cost[start] + heuristic[start], start))
+    heappush(heap, (current_cost[start], start))
 
     while len(heap):
         v = heappop(heap)
@@ -224,9 +229,8 @@ def ucs(maze):
             if w not in close:
                 if current_cost[v[1]] + 1 < current_cost[w]:
                     current_cost[w] = current_cost[v[1]]+1
-                    heuristic[w] = abs(end[0]-w[0]) + abs(end[1]-w[1])
                     heappush(heap, (copy.deepcopy(
-                        current_cost[w])+copy.deepcopy(heuristic[w]), w))
+                        current_cost[w]), w))
                     parent[w] = v[1]
     w = end
     while True:
@@ -237,9 +241,6 @@ def ucs(maze):
     path.append(start)
     path = path[::-1]
     return path
-    # return usc_calculator(maze, start, end)
-
-    # return []
 
 
 def astar(maze):
@@ -254,10 +255,9 @@ def astar(maze):
     start = maze.getStart()
     end = maze.getObjectives()[0]
     return astar_calculator(maze, start, end)
-    # return []
 
 
-def astar_calculator(maze, start, end):
+def astar_calculator(maze, start, end):  # (Astar calc for astar and astar multi)
     close = set()
     neighbors = {}
     parent = {}
@@ -428,6 +428,7 @@ def Union(w, m, parent_MST):
 
 
 def MST(maze, current, objectives, MST_map, pair_map):
+    # Minimum Spanning Tree
     parent_MST = {}
     d_list = []
     distance2 = {}
