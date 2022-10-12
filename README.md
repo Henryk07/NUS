@@ -1,15 +1,12 @@
-# NUS
+# NUS ESP3201
 
-#for Machine Learning Purpose and testing as well.
-#everything will appear, just relax and try to fix it
+for Machine Learning Purpose and testing as well. Everything will appear, just relax and try to fix it
 
-## live is live
+live is live
+no matter what kinds of live that is
+still your live, just try to enjoy it, or it will help you to do so
 
-#no matter what kinds of live that is
-#still your live
-#try to enjoy it, or it will help you to do so
-
-## Run instruction
+# Run instruction
 
 ### For ANN assignment
 
@@ -17,18 +14,18 @@
 python3 ANN_assignment/ANN_v6.py
 ```
 
-### For P_Filter assignment
+## For P_Filter assignment
 
 ```sh
 python3 P_Filter/ESP-particleFilter-assignment/main.py
 ```
 
+## For ESP-search-assignment
+
 ### Requirements
 
 python3
 pygame
-
-### For ESP-search-assignment
 
 The main file to run the mp is mp1.py:
 
@@ -51,8 +48,34 @@ for help:
 python mp1.py -h
 ```
 
-### For ESP-reinforcementLearning assignment
+## For ESP-reinforcement Learning assignment
+
+Run manual control:
 
 ```sh
-python3 P_Filter/ESP-particleFilter-assignment/main.py
+python gridworld.py -m
+```
+
+Run random agent:
+
+```sh
+python gridworld.py -a random
+```
+
+Run value agent with 10 iterations:
+
+```sh
+python gridworld.py -a value -i 10
+```
+
+Run q learning agent for 10 episodes:
+
+```sh
+python gridworld.py -a q --episodes 10
+```
+
+Run q learning agent with the update in place, under manual control:
+
+```sh
+python gridworld.py -a q ---episodes 10 -m
 ```
