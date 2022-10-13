@@ -5,6 +5,9 @@
 # purposes. The Pacman AI projects were developed at UC Berkeley, primarily by
 # John DeNero (denero@cs.berkeley.edu) and Dan Klein (klein@cs.berkeley.edu).
 # For more info, see http://inst.eecs.berkeley.edu/~cs188/sp09/pacman.html
+# ESP3201
+# Haolin Chen
+
 
 from game import *
 from learningAgents import ReinforcementAgent
@@ -72,14 +75,6 @@ class QLearningAgent(ReinforcementAgent):
         if not self.getLegalActions(state):
             return 0.0
         return max([self.getQValue(state, action) for action in self.getLegalActions(state)])
-        #legalActions = self.getLegalActions(state)
-        # if len(legalActions) == 0:
-        #    return 0.0
-        #tmp = util.Counter()
-        # for action in legalActions:
-        #    tmp[action] = self.getQValue(state, action)
-        # return tmp[tmp.argMax()]
-        # util.raiseNotDefined()
 
     def getPolicy(self, state):
         """
@@ -98,16 +93,6 @@ class QLearningAgent(ReinforcementAgent):
             if self.getQValue(state, action) == bestValues:
                 bestActions.append(action)
         return random.choice(bestActions)
-
-        #actions = self.getLegalActions(state)
-        #best_action = None
-        #max_val = float('-inf')
-        # for action in actions:
-        #    q_value = self.q_values[(state, action)]
-        #    if max_val < q_value:
-        #        max_val = q_value
-        #        best_action = action
-        # return best_action
 
     def getAction(self, state):
         """
@@ -130,12 +115,6 @@ class QLearningAgent(ReinforcementAgent):
             return random.choice(legalActions)
         else:
             return self.getPolicy(state)
-        #legal_actions = self.getLegalActions(state)
-        #explore = util.flipCoin(self.epsilon)
-        # if explore:
-        #    return random.choice(legal_actions)
-        # else:
-        #    return self.getPolicy(state)
 
     def update(self, state, action, nextState, reward):
         """
@@ -152,13 +131,3 @@ class QLearningAgent(ReinforcementAgent):
         maxQnext = self.getQValue(nextState, self.getPolicy(nextState))
         Qpart2 = self.alpha * (reward + self.gamma * maxQnext)
         self.q_values[(state, action)] = Qpart1 + Qpart2
-        #old_q_value = self.getQValue(state, action)
-        #old_part = (1 - self.alpha) * old_q_value
-        #reward_part = self.alpha * reward
-        # if not nextState:
-        #    self.q_values[(state, action)] = old_part + reward_part
-        # else:
-        #    nextState_part = self.alpha * \
-        #        self.gamma * self.getValue(nextState)
-        #    self.q_values[(state, action)] = old_part + \
-        #        reward_part + nextState_part
