@@ -1,4 +1,4 @@
-# NUS ESP3201
+# NUS ESP3201 & EE3731c
 
 for Machine Learning Purpose and testing as well. Everything will appear, just relax and try to fix it
 
