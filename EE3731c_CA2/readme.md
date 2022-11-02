@@ -1,10 +1,61 @@
-{\rtf1\ansi\ansicpg1252\cocoartf2706
-\cocoatextscaling0\cocoaplatform0{\fonttbl\f0\fswiss\fcharset0 Helvetica;}
-{\colortbl;\red255\green255\blue255;}
-{\*\expandedcolortbl;;}
-\paperw11900\paperh16840\margl1440\margr1440\vieww11520\viewh8400\viewkind0
-\pard\tx566\tx1133\tx1700\tx2267\tx2834\tx3401\tx3968\tx4535\tx5102\tx5669\tx6236\tx6803\pardirnatural\partightenfactor0
+# NUS EE3731c
 
-\f0\fs24 \cf0 Basically all the command for running code are the same as the requirement PDF.\
-\
-Use \'93\'94}
+# Instruction of running the code
+
+### For EE3731c CA2
+
+for char2double.m and double2char.m
+
+Function instruction:
+double_array = char2double(char_array)
+
+example:
+
+```sh
+char2double('Tough times never last but tough people do')
+double2char([65 32 109 97 110 32 105 115 32 98 117 116 32 119])
+```
+
+for compute_transition_probability.m
+
+Function instruction:
+pr_trans = compute_transition_probability(input_txt)
+
+example:
+
+```sh
+i.e. pr_trans(1,1)
+```
+
+for logn_pr_txt.m
+
+Function instruction:
+logn_pr = logn_pr_txt(frank_encrypted_txt, pr_trans)
+
+example:
+
+```sh
+logn_pr_txt(frank_encrypted_txt, pr_trans)
+```
+
+for metropolis.m
+
+Function instruction:
+[accept_new_key, prob_accept] = metropolis(current_key, new_key, pr_trans, encrypted_txt)
+
+example:
+
+```sh
+metropolis(frank_decrypt_key, mystery_decrypt_key, pr_trans, frank_encrypted_txt)
+```
+
+for mcmc_decrypt_text.m
+
+Function instruction:
+[decrypted_txt, decrypt_key] = mcmc_decrypt_text(encrypted_txt, pr_trans)
+
+example:
+
+```sh
+mcmc_decrypt_text(frank_encrypted_txt, pr_trans)
+```
